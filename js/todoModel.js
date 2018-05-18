@@ -32,6 +32,7 @@ var app = app || {};
 
 	app.TodoModel.prototype.addTodo = function (title) {
 
+		// Function for formatting date and time.
 		var beautify_datetime = (datetime) => {
 			var current_time = datetime[4].split(':');
 			current_time = current_time[0] + ' : ' + current_time[1];
@@ -39,9 +40,11 @@ var app = app || {};
 			return current_date + ' ( ' + current_time + ' )';
 		}
 
+		// Function to check equality in current input and ToDo items in list.
 		var get_equality = (title) => {
 			var title_arr = title.split(' ');
 			var matches = [];
+			// Function to get all substrings from word ( returns strings with length > 50% of word to avoid unnecessary iterations while checking equality )
 			var get_substring_list = (word) => {
 				var i, j, substring_list = [];
 				for (i = 0; i < word.length; i++) {
@@ -52,40 +55,39 @@ var app = app || {};
 				return substring_list;
 			  }
 
+			// Function to check against a Todo item in the list.
 			function checkFromList(sometodofromlist, index) {
 				var todo_from_list = sometodofromlist.title.split(' ');
-				var counter =0;
-				var words_counter = 0;
-				title_arr.map((inputstrletter) => {
+				var counter = 0; // Counter variable for substring equality check.
+				var words_counter = 0; // Counter variable for word equality check.
+				title_arr.map((inputstrletter) => { 
 					todo_from_list.filter((data) => {
 						var data_substring = get_substring_list(data);
 						var inputstr_substring = get_substring_list(inputstrletter);
 						counter = 0;
 						inputstr_substring.map((sub)=>{
 							data_substring.filter((datasub)=>{
-								if(sub===datasub){
+								if(sub===datasub){ // Substring match
 									counter++;
 								}
 							});
 						});
 						if(counter>0){
-							words_counter++;
+							words_counter++; // Word match
 						}
 					});
 				});
 				if (words_counter >= Math.round((title_arr.length)/2)) {
-					matches.push(index);
+					matches.push(index); // Push index of matched ToDo item into array
 				}
 			}
 			this.todos.map(checkFromList);
 			return matches;
 		}
-
 		var matched_todos = get_equality(title);
-
-		if (matched_todos.length > 0) {
+		if (matched_todos.length > 0) { // Alert user for similar ToDo item
 			alert('Is this similar to your todo item ' + (parseInt(matched_todos[0]) + 1) + '?');
-		} else {
+		} else { // Add new item to ToDo list.
 			var current_datetime = Date().split(' ').slice(0, 5);
 			this.todos = this.todos.concat({
 				id: Utils.uuid(),
