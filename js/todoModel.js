@@ -42,18 +42,38 @@ var app = app || {};
 		var get_equality = (title) => {
 			var title_arr = title.split(' ');
 			var matches = [];
+			var get_substring_list = (word) => {
+				var i, j, substring_list = [];
+				for (i = 0; i < word.length; i++) {
+					for (j = i + Math.round(word.length/2); j < word.length + 1; j++) {
+						substring_list.push(word.slice(i, j));
+					}
+				}
+				return substring_list;
+			  }
 
 			function checkFromList(sometodofromlist, index) {
-				var bstr = sometodofromlist.title.split(' ');
-				var counter = 0;
+				var todo_from_list = sometodofromlist.title.split(' ');
+				var counter =0;
+				var words_counter = 0;
 				title_arr.map((inputstrletter) => {
-					bstr.filter((data) => {
-						if (data === inputstrletter) {
-							counter++;
+					todo_from_list.filter((data) => {
+						var data_substring = get_substring_list(data);
+						var inputstr_substring = get_substring_list(inputstrletter);
+						counter = 0;
+						inputstr_substring.map((sub)=>{
+							data_substring.filter((datasub)=>{
+								if(sub===datasub){
+									counter++;
+								}
+							});
+						});
+						if(counter>0){
+							words_counter++;
 						}
 					});
 				});
-				if (counter >= (title_arr.length) / 2) {
+				if (words_counter >= Math.round((title_arr.length)/2)) {
 					matches.push(index);
 				}
 			}
